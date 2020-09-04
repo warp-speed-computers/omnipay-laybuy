@@ -2,12 +2,13 @@
 
 namespace Omnipay\Laybuy\Message;
 
-use Omnipay\Common\Exception\InvalidResponseException;
 use Omnipay\Common\Message\AbstractRequest;
+use Omnipay\Common\Exception\InvalidResponseException;
 
 class AuthorizeRequest extends AbstractRequest
 {
     protected $liveEndpoint = 'https://api.laybuy.com';
+    //protected $liveEndpoint = 'https://sandbox-api.laybuy.com';
 
     protected $testEndpoint = 'https://sandbox-api.laybuy.com';
 
@@ -66,20 +67,10 @@ class AuthorizeRequest extends AbstractRequest
 
     public function sendData($data)
     {
-        // don't throw exceptions for 4xx errors
-        $this->httpClient->getEventDispatcher()->addListener(
-            'request.error',
-            function ($event) {
-                if ($event['response']->isClientError()) {
-                    $event->stopPropagation();
-                }
-            }
-        );
-
-        // Guzzle HTTP Client createRequest does funny things when a GET request
+        // Guzzle HTTP Client request does funny things when a GET request
         // has attached data, so don't send the data if the method is GET.
         if ($this->getHttpMethod() == 'GET') {
-            $httpRequest = $this->httpClient->createRequest(
+            $httpResponse = $this->httpClient->request(
                 $this->getHttpMethod(),
                 $this->getEndpoint() . '?' . http_build_query($data),
                 array(
@@ -89,7 +80,7 @@ class AuthorizeRequest extends AbstractRequest
                 )
             );
         } else {
-            $httpRequest = $this->httpClient->createRequest(
+            $httpResponse = $this->httpClient->request(
                 $this->getHttpMethod(),
                 $this->getEndpoint(),
                 array(
@@ -102,12 +93,12 @@ class AuthorizeRequest extends AbstractRequest
         }
 
         try {
-            $httpRequest->getCurlOptions()->set(CURLOPT_SSLVERSION, 6); // CURL_SSLVERSION_TLSv1_2 for libcurl < 7.35
-            $httpResponse = $httpRequest->send();
             $responseBody = (string) $httpResponse->getBody();
             $response = json_decode($responseBody, true) ?? [];
 
-            return $this->response = $this->createResponse($response);
+            $this->response = $this->createResponse($response);
+
+            return $this->response;
         } catch (\Exception $e) {
             throw new InvalidResponseException(
                 'Error communicating with payment gateway: ' . $e->getMessage(),

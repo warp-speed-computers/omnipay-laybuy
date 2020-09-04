@@ -2,8 +2,6 @@
 
 namespace Omnipay\Laybuy\Message;
 
-use Omnipay\Common\Exception\InvalidRequestException;
-
 class PurchaseRequest extends AuthorizeRequest
 {
     /**
@@ -69,6 +67,7 @@ class PurchaseRequest extends AuthorizeRequest
             'merchantReference' => $this->getTransactionReference(),
         );
 
+        \Log::debug('Creating Laybuy purchase with data',$data);
         return $data;
     }
 
