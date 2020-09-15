@@ -12,7 +12,7 @@
         "payment",
         "gateway"
     ],
-    "homepage": "https://github.com/mediabeastnz/omnipay-laybuy",
+    "homepage": "https://github.com/warp-speed-computers/omnipay-laybuy",
     "license": "MIT",
     "authors": [
         {
