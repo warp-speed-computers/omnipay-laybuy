@@ -1,5 +1,5 @@
 {
-    "name": "warp/omnipay-laybuy",
+    "name": "warp-speed-computers/omnipay-laybuy",
     "type": "library",
     "version": "3.0.0",
     "description": "Laybuy gateway for Omnipay payment processing library",
